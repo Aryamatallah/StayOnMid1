@@ -6,13 +6,35 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8293E9062F4FD75100296376 /* Abel-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8293E9032F4FD75100296376 /* Abel-Regular.ttf */; };
+		8293E9172F4FD7DD00296376 /* GolosText.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8293E9162F4FD7DD00296376 /* GolosText.ttf */; };
+		8293E91A2F4FD83600296376 /* Actor-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8293E9192F4FD83600296376 /* Actor-Regular.ttf */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		82FBDC932F4F9EEC004DDD49 /* StayOnMID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StayOnMID.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8293E9032F4FD75100296376 /* Abel-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Abel-Regular.ttf"; sourceTree = "<group>"; };
+		8293E9162F4FD7DD00296376 /* GolosText.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = GolosText.ttf; sourceTree = "<group>"; };
+		8293E9192F4FD83600296376 /* Actor-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Actor-Regular.ttf"; sourceTree = "<group>"; };
+		8293E91F2F4FE2ED00296376 /* StayOnMID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StayOnMID.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8293E9212F4FE2ED00296376 /* Exceptions for "StayOnMID" folder in "StayOnMID" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 82FBDC922F4F9EEC004DDD49 /* StayOnMID */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		82FBDC952F4F9EEC004DDD49 /* StayOnMID */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8293E9212F4FE2ED00296376 /* Exceptions for "StayOnMID" folder in "StayOnMID" target */,
+			);
 			path = StayOnMID;
 			sourceTree = "<group>";
 		};
@@ -33,16 +55,11 @@
 			isa = PBXGroup;
 			children = (
 				82FBDC952F4F9EEC004DDD49 /* StayOnMID */,
-				82FBDC942F4F9EEC004DDD49 /* Products */,
+				8293E91F2F4FE2ED00296376 /* StayOnMID.app */,
+				8293E9162F4FD7DD00296376 /* GolosText.ttf */,
+				8293E9032F4FD75100296376 /* Abel-Regular.ttf */,
+				8293E9192F4FD83600296376 /* Actor-Regular.ttf */,
 			);
-			sourceTree = "<group>";
-		};
-		82FBDC942F4F9EEC004DDD49 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				82FBDC932F4F9EEC004DDD49 /* StayOnMID.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -67,7 +84,7 @@
 			packageProductDependencies = (
 			);
 			productName = APP1;
-			productReference = 82FBDC932F4F9EEC004DDD49 /* StayOnMID.app */;
+			productReference = 8293E91F2F4FE2ED00296376 /* StayOnMID.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -96,7 +113,7 @@
 			mainGroup = 82FBDC8A2F4F9EEC004DDD49;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 82FBDC942F4F9EEC004DDD49 /* Products */;
+			productRefGroup = 82FBDC8A2F4F9EEC004DDD49;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -110,6 +127,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8293E9062F4FD75100296376 /* Abel-Regular.ttf in Resources */,
+				8293E91A2F4FD83600296376 /* Actor-Regular.ttf in Resources */,
+				8293E9172F4FD7DD00296376 /* GolosText.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,6 +278,7 @@
 				DEVELOPMENT_TEAM = 85YCFSMKFM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StayOnMID/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -268,13 +289,12 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = aryam.com.APP1;
+				PRODUCT_BUNDLE_IDENTIFIER = aryam.com.StayOnMID;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "APP1/Model/APP1-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -293,6 +313,7 @@
 				DEVELOPMENT_TEAM = 85YCFSMKFM;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StayOnMID/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -303,13 +324,12 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = aryam.com.APP1;
+				PRODUCT_BUNDLE_IDENTIFIER = aryam.com.StayOnMID;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "APP1/Model/APP1-Bridging-Header.h";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
