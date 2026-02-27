@@ -7,8 +7,7 @@
 
 import SwiftUI
 import UIKit
-
-
+import UserNotifications
 
 struct bourding: View {
 
@@ -18,18 +17,20 @@ struct bourding: View {
     private let bodyFontName  = "Abel-Regular"
 
     private let ringOffsetY: CGFloat = -40
+    private let iconOffsetX: CGFloat = 0
+    private let iconOffsetY: CGFloat = 55
 
     private let iconSizePage1: CGFloat = 140
     private let iconSizePage2: CGFloat = 155
-
-    private let iconOffsetX: CGFloat = 0
-    private let iconOffsetY: CGFloat = 60
+    private let iconSizePage3: CGFloat = 175
 
     private let page1TextExtraDown: CGFloat = 28
-    private let page3TextExtraDown: CGFloat = 500
+    private let page3TextExtraDown: CGFloat = 85
+    private let dotsSpacing: CGFloat = 10
 
     @State private var page: Int = 0
     @State private var transitionDirection: Edge = .trailing
+    @State private var goToMain = false
 
     var body: some View {
         ZStack {
@@ -55,8 +56,12 @@ struct bourding: View {
                     }
             )
         }
+        .fullScreenCover(isPresented: $goToMain) {
+            Main()
+        }
     }
 
+    // MARK: Page Transition
     private var pageTransition: AnyTransition {
         .asymmetric(
             insertion: .move(edge: transitionDirection).combined(with: .opacity),
@@ -67,110 +72,152 @@ struct bourding: View {
     // MARK: Pages
 
     private var page1: some View {
-        pageLayout(
+        standardPage(
             icon: "pencil.and.list.clipboard",
             iconSize: iconSizePage1,
             title: "Stay on Track.\nStay in Control.",
             subtitle: "Never miss a dose again. Simple reminders made just for you.",
             activeDotIndex: 0,
-            isLastPage: false,
             textExtraDown: page1TextExtraDown,
             showSkip: true
         )
     }
 
     private var page2: some View {
-        pageLayout(
+        standardPage(
             icon: "cross.vial",
             iconSize: iconSizePage2,
             title: "Your health\ndeserves\nconsistency.",
             subtitle: "Small daily actions make a big difference\nover time.",
             activeDotIndex: 1,
-            isLastPage: false,
             textExtraDown: 0,
             showSkip: true
         )
     }
 
     private var page3: some View {
-        pageLayout(
-            icon: nil,                     // ✅ ما فيه أيقونة
-            iconSize: 0,
-            title: "Right on time\nClear progress",
-            subtitle: "",
-            activeDotIndex: 2,
-            isLastPage: true,
-            textExtraDown: page3TextExtraDown,
-            showSkip: false
-        )
+        VStack(spacing: 0) {
+
+            HStack { Spacer() }
+                .padding(.top, 18)
+                .padding(.trailing, 22)
+
+            Spacer().frame(height: 30)
+
+            ZStack {
+                Circle()
+                    .trim(from: 0.08, to: 0.92)
+                    .stroke(accent, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                    .frame(width: 250, height: 250)
+                    .rotationEffect(.degrees(90))
+                    .padding(.top, 80)
+                    .offset(y: ringOffsetY)
+
+                Image(systemName: "clock.badge.fill")
+                    .font(.system(size: iconSizePage3))
+                    .foregroundStyle(accent)
+                    .offset(x: iconOffsetX, y: iconOffsetY)
+            }
+
+            Spacer().frame(height: 50)
+
+            VStack(alignment: .leading, spacing: 12) {
+                (
+                    Text("Right on time\n")
+                        .font(customFont(titleFontName, size: 40, weight: .bold))
+                    +
+                    Text("Clear progress")
+                        .font(customFont(titleFontName, size: 40, weight: .regular))
+                )
+                .foregroundStyle(.white)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 28)
+            .padding(.top, page3TextExtraDown)
+
+            Spacer()
+
+            ZStack {
+
+                HStack(spacing: dotsSpacing) {
+                    dot(isActive: false)
+                    dot(isActive: false)
+                    dot(isActive: true)
+                }
+
+                HStack {
+                    Spacer()
+                    Button {
+                        finishOnboarding()
+                    } label: {
+                        Text("Get start")
+                            .font(customFont(bodyFontName, size: 18, weight: .regular))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 22)
+                            .frame(height: 46)
+                            .background(accent)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+            .padding(.horizontal, 28)
+            .padding(.bottom, 36)
+        }
     }
 
-    // MARK: Layout
+    // MARK: Shared Page Layout
 
-    @ViewBuilder
-    private func pageLayout(
-        icon: String?,
+    private func standardPage(
+        icon: String,
         iconSize: CGFloat,
         title: String,
         subtitle: String,
         activeDotIndex: Int,
-        isLastPage: Bool,
         textExtraDown: CGFloat,
         showSkip: Bool
     ) -> some View {
 
         VStack(spacing: 0) {
 
-            // Skip
             HStack {
                 Spacer()
                 if showSkip {
-                    Button("Skep") {
-                        goToLastFromSkip()
-                    }
-                    .foregroundStyle(.white)
-                    .font(customFont(bodyFontName, size: 18))
-                    .padding(.top, 18)
-                    .padding(.trailing, 22)
+                    Button("Skip") { goToLastFromSkip() }
+                        .foregroundStyle(.white)
+                        .font(customFont(bodyFontName, size: 18, weight: .regular))
+                        .padding(.top, 18)
+                        .padding(.trailing, 22)
                 }
             }
 
             Spacer().frame(height: 30)
 
-            // ✅ فقط إذا مو الصفحة الأخيرة نعرض الدائرة والأيقونة
-            if !isLastPage {
-                ZStack {
-                    Circle()
-                        .trim(from: 0.06, to: 0.94)
-                        .stroke(accent, style: StrokeStyle(lineWidth: 6, lineCap: .round))
-                        .frame(width: 250, height: 250)
-                        .rotationEffect(.degrees(90))
-                        .padding(.top, 80)
-                        .offset(y: ringOffsetY)
+            ZStack {
+                Circle()
+                    .trim(from: 0.06, to: 0.94)
+                    .stroke(accent, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                    .frame(width: 250, height: 250)
+                    .rotationEffect(.degrees(90))
+                    .padding(.top, 80)
+                    .offset(y: ringOffsetY)
 
-                    if let icon = icon {
-                        Image(systemName: icon)
-                            .font(.system(size: iconSize))
-                            .foregroundStyle(accent)
-                            .offset(x: iconOffsetX, y: iconOffsetY)
-                    }
-                }
-
-                Spacer().frame(height: 50)
+                Image(systemName: icon)
+                    .font(.system(size: iconSize))
+                    .foregroundStyle(accent)
+                    .offset(x: iconOffsetX, y: iconOffsetY)
             }
 
-            // Text
+            Spacer().frame(height: 50)
+
             VStack(alignment: .leading, spacing: 12) {
 
                 Text(title)
-                    .font(customFont(titleFontName, size: 40))
+                    .font(customFont(titleFontName, size: 40, weight: .regular))
                     .foregroundStyle(.white)
 
-                if !subtitle.isEmpty {
-                    Text(subtitle)
-                        .font(customFont(bodyFontName, size: 17))
-                        .foregroundStyle(.white.opacity(0.75))
-                }
+                Text(subtitle)
+                    .font(customFont(bodyFontName, size: 17, weight: .regular))
+                    .foregroundStyle(.white.opacity(0.75))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 28)
@@ -178,10 +225,8 @@ struct bourding: View {
 
             Spacer()
 
-            // Bottom
             ZStack {
-
-                HStack(spacing: 10) {
+                HStack(spacing: dotsSpacing) {
                     dot(isActive: activeDotIndex == 0)
                     dot(isActive: activeDotIndex == 1)
                     dot(isActive: activeDotIndex == 2)
@@ -189,29 +234,15 @@ struct bourding: View {
 
                 HStack {
                     Spacer()
-                    if isLastPage {
-                        Button {
-                            finishOnboarding()
-                        } label: {
-                            Text("Get start")
-                                .font(customFont(bodyFontName, size: 18))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 22)
-                                .frame(height: 46)
-                                .background(accent)
-                                .clipShape(Capsule())
-                        }
-                    } else {
-                        Button {
-                            goNext(direction: .trailing)
-                        } label: {
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(.white)
-                                .frame(width: 58, height: 58)
-                                .background(accent)
-                                .clipShape(Circle())
-                        }
+                    Button {
+                        goNext(direction: .trailing)
+                    } label: {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 58, height: 58)
+                            .background(accent)
+                            .clipShape(Circle())
                     }
                 }
             }
@@ -235,20 +266,31 @@ struct bourding: View {
     }
 
     private func goToLastFromSkip() {
-        guard page < 2 else { return }
         transitionDirection = .trailing
-        withAnimation(.smooth(duration: 0.45)) {
-            page = 2
-        }
+        page = 2
     }
 
     private func opposite(_ edge: Edge) -> Edge {
         edge == .trailing ? .leading : .trailing
     }
 
+    // 🔥 FINAL FIX
     private func finishOnboarding() {
-        print("Finish onboarding")
+
+        UNUserNotificationCenter.current()
+            .requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in
+
+            DispatchQueue.main.async {
+
+                // 👇 نحفظ إن المستخدم خلص البوردينق
+                UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+
+                goToMain = true
+            }
+        }
     }
+
+    // MARK: UI Helpers
 
     private func dot(isActive: Bool) -> some View {
         Circle()
@@ -256,11 +298,12 @@ struct bourding: View {
             .frame(width: 7, height: 7)
     }
 
-    private func customFont(_ name: String, size: CGFloat) -> Font {
+    private func customFont(_ name: String, size: CGFloat, weight: UIFont.Weight) -> Font {
         if UIFont(name: name, size: size) != nil {
             return .custom(name, size: size)
         } else {
-            return .system(size: size)
+            let w: Font.Weight = (weight == .bold) ? .bold : .regular
+            return .system(size: size, weight: w)
         }
     }
 }
