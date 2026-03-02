@@ -18,64 +18,71 @@ struct Main: View {
         let selectedStart = Calendar.current.startOfDay(for: vm.selectedDate)
         let isPast = selectedStart < todayStart
 
-        return ZStack {
+        return NavigationStack {
 
-            background
+            ZStack {
 
-            VStack(spacing: 18) {
+                background
 
-                calendarCard
+                VStack(spacing: 18) {
 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Next Dose")
-                        .font(.custom("GolosText", size: 22))
-                        .bold()
-                        .foregroundStyle(.white)
+                    calendarCard
 
-                    nextDoseCard
-                }
-                .padding(.horizontal, 18)
-
-                VStack(alignment: .leading, spacing: 10) {
-
-                    HStack {
-                        Text("Today's Medications List")
-                            .font(.custom("GolosText", size: 22))
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Next Dose")
+                            .font(.custom("GolosText", size: 20))
                             .bold()
                             .foregroundStyle(.white)
 
-                        Spacer()
-
-                        Button {
-                            if !isPast {
-                                vm.showAddSheet = true
-                            }
-                        } label: {
-                            Image(systemName: "plus")
-                                .font(.system(size: 24))
-                                .foregroundStyle(isPast ? .gray : vm.accent)
-                        }
-                        .disabled(isPast)
+                        nextDoseCard
                     }
+                    .padding(.horizontal, 18)
 
-                    medsCard(isPast: isPast)
+                    VStack(alignment: .leading, spacing: 10) {
+
+                        HStack {
+                            Text("Today's Medications List")
+                                .font(.custom("GolosText", size: 20))
+                                .bold()
+                                .foregroundStyle(.white)
+
+                            Spacer()
+
+                            Button {
+                                if !isPast {
+                                    vm.showAddSheet = true
+                                }
+                            } label: {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 24))
+                                    .foregroundStyle(isPast ? .gray : vm.accent)
+                            }
+                            .disabled(isPast)
+                        }
+
+                        medsCard(isPast: isPast)
+                    }
+                    .padding(.horizontal, 18)
+
+                    Spacer()
                 }
-                .padding(.horizontal, 18)
-
-                Spacer()
+                .padding(.top, 14)
             }
-            .padding(.top, 14)
-        }
-        .onReceive(ticker) { vm.tick($0) }
-
-        .sheet(isPresented: $vm.showAddSheet) {
-            Sheet(accent: vm.accent) {
-                vm.addMedication($0)
+            .onAppear {
+                UIApplication.shared.applicationIconBadgeNumber = 0
             }
-            .presentationDetents([.medium])
-            .presentationDragIndicator(.visible)
+            .onReceive(ticker) { vm.tick($0) }
+            .sheet(isPresented: $vm.showAddSheet) {
+                Sheet(accent: vm.accent) {
+                    vm.addMedication($0)
+                }
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+            }
         }
     }
+
+    // MARK: Background
 
     private var background: some View {
         LinearGradient(
@@ -90,6 +97,8 @@ struct Main: View {
         )
         .ignoresSafeArea()
     }
+
+    // MARK: Calendar
 
     private var calendarCard: some View {
         VStack(spacing: 10) {
@@ -151,6 +160,8 @@ struct Main: View {
         }
     }
 
+    // MARK: Next Dose
+
     private var nextDoseCard: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
@@ -185,10 +196,13 @@ struct Main: View {
         .frame(height: 75)
     }
 
+    // MARK: Medications Card
+
     private func medsCard(isPast: Bool) -> some View {
 
         let todayStart = Calendar.current.startOfDay(for: Date())
         let selectedStart = Calendar.current.startOfDay(for: vm.selectedDate)
+
         let isToday = selectedStart == todayStart
         let isFuture = selectedStart > todayStart
 
@@ -210,6 +224,7 @@ struct Main: View {
                         .foregroundStyle(.white.opacity(0.4))
 
                     if isToday {
+
                         Text("No medications for today")
                             .font(.custom("GolosText", size: 16))
                             .foregroundStyle(.white.opacity(0.75))
@@ -219,11 +234,13 @@ struct Main: View {
                             .foregroundStyle(vm.accent.opacity(0.9))
 
                     } else if isFuture {
+
                         Text("No medications scheduled")
                             .font(.custom("GolosText", size: 16))
                             .foregroundStyle(.white.opacity(0.75))
 
                     } else {
+
                         Text("No medications")
                             .font(.custom("GolosText", size: 16))
                             .foregroundStyle(.white.opacity(0.6))
@@ -256,58 +273,74 @@ struct Main: View {
         .frame(minHeight: 220)
     }
 
+    // MARK: Medication Row
+
+    // MARK: Medication Row
+
     private func medRow(_ med: Medication, isPast: Bool) -> some View {
 
         let isDone = vm.checked.contains(med.id)
 
         return HStack(spacing: 12) {
 
-            ZStack {
-                Circle()
-                    .fill(isDone ? vm.accent.opacity(0.3) : .clear)
-                    .overlay(
-                        Circle()
-                            .stroke(isPast ? Color.gray : vm.accent, lineWidth: 1.5)
-                    )
-                    .frame(width: 32, height: 32)
+            // ✅ الدائرة زر مستقل
+            Button {
+                if !isPast {
+                    vm.tapMedication(med)
+                }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(isDone ? vm.accent.opacity(0.3) : .clear)
+                        .overlay(
+                            Circle()
+                                .stroke(isPast ? Color.gray : vm.accent, lineWidth: 1.5)
+                        )
+                        .frame(width: 32, height: 32)
 
-                if med.frequency == 1 {
-                    if isDone {
-                        Image(systemName: "checkmark")
-                            .foregroundStyle(isPast ? .gray : vm.accent)
-                    }
-                } else {
-                    if isDone {
-                        Image(systemName: "checkmark")
-                            .foregroundStyle(isPast ? .gray : vm.accent)
+                    if med.frequency == 1 {
+                        if isDone {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(isPast ? .gray : vm.accent)
+                        }
                     } else {
-                        Text("\(med.remaining)")
-                            .foregroundStyle(.white)
-                            .font(.system(size: 14, weight: .bold))
+                        if isDone {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(isPast ? .gray : vm.accent)
+                        } else {
+                            Text("\(med.remaining)")
+                                .foregroundStyle(.white)
+                                .font(.system(size: 14, weight: .bold))
+                        }
                     }
                 }
             }
+            .buttonStyle(.plain)
 
-            Text(med.name)
-                .font(.custom("GolosText", size: 16))
-                .foregroundStyle(.white)
+            // ✅ باقي الصف للتنقل فقط
+            NavigationLink {
+                MedicationDetailView(med: med, vm: vm)
+            } label: {
 
-            Spacer()
+                HStack {
 
-            Image(systemName: vm.amPmIcon(for: med.time))
-                .foregroundStyle(.white.opacity(0.7))
+                    Text(med.name)
+                        .font(.custom("GolosText", size: 16))
+                        .foregroundStyle(.white)
 
-            Text(timeString(med.time))
-                .font(.custom("Abel-Regular", size: 16))
-                .foregroundStyle(.white)
-        }
-        .padding(.vertical, 6)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            if isPast { return }
-            vm.tapMedication(med)
+                    Spacer()
+
+                    Image(systemName: vm.amPmIcon(for: med.time))
+                        .foregroundStyle(.white.opacity(0.7))
+
+                    Text(timeString(med.time))
+                        .font(.custom("Abel-Regular", size: 16))
+                        .foregroundStyle(.white)
+                }
+            }
         }
     }
+    // MARK: Helpers
 
     private func monthTitle(_ date: Date) -> String {
         let f = DateFormatter()
@@ -333,7 +366,6 @@ struct Main: View {
         return f.string(from: date)
     }
 }
-
 #Preview {
     Main()
 }

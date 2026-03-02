@@ -88,7 +88,6 @@ final class ViewModel: ObservableObject {
     func tapMedication(_ med: Medication) {
         guard let index = meds.firstIndex(where: { $0.id == med.id }) else { return }
 
-        // ✅ مرة وحدة يومياً
         if meds[index].frequency == 1 {
 
             if checked.contains(med.id) {
@@ -100,7 +99,6 @@ final class ViewModel: ObservableObject {
             return
         }
 
-        // ✅ أكثر من مرة
         if meds[index].remaining > 1 {
             meds[index].remaining -= 1
         } else {
@@ -111,7 +109,9 @@ final class ViewModel: ObservableObject {
         save()
     }
 
+    // 🔥 UPDATED: Add + Schedule Notification
     func addMedication(_ med: Medication) {
+
         var newMed = med
 
         let cal = Calendar.current
@@ -125,12 +125,37 @@ final class ViewModel: ObservableObject {
         }
 
         meds.append(newMed)
+
+        // 🔔 Schedule Notification
+        NotificationManager.shared.scheduleNotification(for: newMed)
+
         save()
     }
 
+    // 🔥 UPDATED: Delete + Cancel Notification
     func deleteMedication(_ med: Medication) {
+
+        NotificationManager.shared.cancelNotification(for: med)
+
         meds.removeAll { $0.id == med.id }
         checked.remove(med.id)
+
+        save()
+    }
+
+    // ✅ NEW: Update + Reschedule Notification
+    func updateMedication(_ updated: Medication) {
+
+        guard let index = meds.firstIndex(where: { $0.id == updated.id }) else { return }
+
+        // ❗️Cancel old notification before updating
+        NotificationManager.shared.cancelNotification(for: meds[index])
+
+        meds[index] = updated
+
+        // 🔔 Schedule new notification with updated values
+        NotificationManager.shared.scheduleNotification(for: updated)
+
         save()
     }
 
